@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  bingo:
+    image: arm64v8/node
+    container_name: bingo
+    restart: on-failure
+    working_dir: /app
+    command: npm run dev
+    networks:
+      - proxy
+    volumes:
+      - bingo:/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.bingo.rule=Host(`bingo.anerao.dev.br`)"
+      - "traefik.http.routers.bingo.entrypoints=websecure"
+    expose:
+      - 443
+
+volumes:
+  bingo:
+    external: true
+
+networks:
+  proxy:
+    external: true

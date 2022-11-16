@@ -1,0 +1,49 @@
+version: "3.7"
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.exposedbydefault=true"
+      - "--entrypoints.web.address=:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - local
+
+  bingo-webserver:
+    container_name: bingo-webserver
+    image: antonioanerao/ubuntu-node:1.0.0
+    restart: always
+    working_dir: /app
+    command: npm run prod
+    networks:
+      - local
+    volumes:
+      - ./:/app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=local"
+      - "traefik.http.routers.sigep.rule=Host(`bingo.docker.localhost`)"
+      - "traefik.http.routers.sigep.entrypoints=web"
+    expose:
+      - 80
+
+volumes:
+  bingo-webserver:
+    external: true
+
+networks:
+  local:
+    external: true

@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/vendor
 
 # testing
 /coverage
@@ -30,3 +31,5 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+.idea
